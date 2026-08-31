@@ -1,16 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Badge } from "@/components/badge";
+import { CategoryBadge } from "@/components/category-badge";
 import { formatoMoneda } from "@/lib/finanzas";
-
-interface CuotaVM {
-  id: string;
-  numero: number;
-  monto: number;
-  fecha_cobro: string;
-  pagado: boolean;
-}
+import type { CuotaVM } from "@/lib/mock-data";
 
 export function CompraRow({
   nombre,
@@ -46,7 +39,7 @@ export function CompraRow({
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm text-slate-200">{nombre}</p>
           <div className="mt-0.5 flex items-center gap-2">
-            <Badge>{categoria}</Badge>
+            <CategoryBadge categoriaId={categoria} />
             <span className="text-[11px] text-slate-500">
               {pagadas}/{cuotas.length}
             </span>

@@ -1,9 +1,4 @@
-import { formatoMoneda } from "@/lib/finanzas";
-
-const MESES = [
-  "enero", "febrero", "marzo", "abril", "mayo", "junio",
-  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
-];
+import { NOMBRES_MES, formatoMoneda } from "@/lib/finanzas";
 
 export function SaldoCard({
   saldo,
@@ -21,7 +16,7 @@ export function SaldoCard({
   return (
     <div className="rounded-3xl bg-gradient-to-br from-slate-800 to-slate-900 p-6 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
-        {MESES[mes - 1]} {anio} · saldo actual
+        {NOMBRES_MES[mes - 1]} {anio} · saldo actual
       </p>
       <p
         className={`mt-1 text-4xl font-semibold tabular-nums ${

@@ -1,4 +1,5 @@
-import { Badge } from "@/components/badge";
+import { AlertaSubidaBadge } from "@/components/alerta-badge";
+import { CategoryBadge } from "@/components/category-badge";
 import { formatoMoneda } from "@/lib/finanzas";
 
 export function GastoFijoRow({
@@ -7,6 +8,7 @@ export function GastoFijoRow({
   diaCobro,
   monto,
   pagado,
+  subioPorcentaje,
   onToggle,
 }: {
   nombre: string;
@@ -14,6 +16,7 @@ export function GastoFijoRow({
   diaCobro: number;
   monto: number;
   pagado: boolean;
+  subioPorcentaje?: number | null;
   onToggle: () => void;
 }) {
   return (
@@ -30,9 +33,10 @@ export function GastoFijoRow({
         >
           {nombre}
         </p>
-        <div className="mt-0.5 flex items-center gap-2">
-          <Badge>{categoria}</Badge>
+        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+          <CategoryBadge categoriaId={categoria} />
           <span className="text-[11px] text-slate-500">día {diaCobro}</span>
+          {!!subioPorcentaje && <AlertaSubidaBadge porcentaje={subioPorcentaje} />}
         </div>
       </div>
       <span

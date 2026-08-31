@@ -1,4 +1,4 @@
-import { Badge } from "@/components/badge";
+import { CategoryBadge } from "@/components/category-badge";
 import { formatoMoneda } from "@/lib/finanzas";
 
 export function GastoVariableRow({
@@ -22,7 +22,7 @@ export function GastoVariableRow({
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm text-slate-200">{nombre}</p>
         <div className="mt-0.5 flex items-center gap-2">
-          <Badge>{categoria}</Badge>
+          <CategoryBadge categoriaId={categoria} />
           <span className="text-[11px] text-slate-500">{fechaCorta}</span>
         </div>
       </div>
