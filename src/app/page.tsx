@@ -93,8 +93,11 @@ export default function Home() {
   const saldo = saldosPorMes[monthIndex];
   const pendiente = calcularPendiente({ gastosMes: gastosFijosMes, cuotas: cuotasMes });
 
-  const avisarSaldoActualizado = (siguienteSaldo: number) => {
-    mostrarToast(`Saldo actualizado: ${formatoMoneda(siguienteSaldo)}`);
+  const avisarSaldoActualizado = (siguienteSaldo: number, deshacer: () => void) => {
+    mostrarToast(`Saldo actualizado: ${formatoMoneda(siguienteSaldo)}`, {
+      texto: "Deshacer",
+      onClick: deshacer,
+    });
   };
 
   const toggleGastoFijo = (id: string) => {
@@ -113,7 +116,7 @@ export default function Home() {
       gastosVariables,
       ingresosPorMes,
     )[monthIndex];
-    avisarSaldoActualizado(nuevoSaldo);
+    avisarSaldoActualizado(nuevoSaldo, () => toggleGastoFijo(id));
   };
 
   const toggleCuota = (compraId: string, cuotaId: string) => {
@@ -131,7 +134,7 @@ export default function Home() {
       gastosVariables,
       ingresosPorMes,
     )[monthIndex];
-    avisarSaldoActualizado(nuevoSaldo);
+    avisarSaldoActualizado(nuevoSaldo, () => toggleCuota(compraId, cuotaId));
   };
 
   return (
