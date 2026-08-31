@@ -78,11 +78,18 @@ export function CampoSelect({
   );
 }
 
-export function BotonGuardar({ children }: { children: React.ReactNode }) {
+export function BotonGuardar({
+  children,
+  disabled,
+}: {
+  children: React.ReactNode;
+  disabled?: boolean;
+}) {
   return (
     <button
       type="submit"
-      className="mt-2 w-full rounded-xl bg-emerald-500 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400"
+      disabled={disabled}
+      className="mt-2 w-full rounded-xl bg-emerald-500 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
     >
       {children}
     </button>

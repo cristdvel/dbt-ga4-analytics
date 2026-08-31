@@ -2,6 +2,12 @@
  * Tipos manuales que reflejan supabase/migrations/. Si más adelante se usa
  * `supabase gen types typescript`, este archivo puede sustituirse por el
  * generado sin cambiar las importaciones (`@/lib/types/database`).
+ *
+ * IMPORTANTE: las filas van como `type`, no `interface` — con
+ * @supabase/supabase-js@2.112+ un `interface` para Row/Insert/Update hace
+ * que el chequeo de `GenericSchema` de postgrest-js no lo reconozca y todo
+ * el resultado de la consulta degenera a `never` en tiempo de compilación
+ * (comprobado de forma aislada). Mismo problema con `Database` en sí.
  */
 
 export type TipoIngreso = "fijo" | "extra";
@@ -12,23 +18,23 @@ export type TipoNotificacion =
   | "balance_actualizado"
   | "gasto_subio";
 
-export interface Mes {
+export type Mes = {
   id: string;
   household_id: string;
   anio: number;
   mes: number;
   saldo_inicial: number;
-}
+};
 
-export interface Ingreso {
+export type Ingreso = {
   id: string;
   mes_id: string;
   nombre: string;
   monto: number;
   tipo: TipoIngreso;
-}
+};
 
-export interface GastoFijo {
+export type GastoFijo = {
   id: string;
   household_id: string;
   nombre: string;
@@ -36,9 +42,9 @@ export interface GastoFijo {
   dia_cobro: number;
   categoria: string;
   activo: boolean;
-}
+};
 
-export interface GastoMes {
+export type GastoMes = {
   id: string;
   mes_id: string;
   gasto_fijo_id: string;
@@ -46,17 +52,17 @@ export interface GastoMes {
   pagado: boolean;
   fecha_marcado: string | null;
   marcado_por: string | null;
-}
+};
 
-export interface Compra {
+export type Compra = {
   id: string;
   household_id: string;
   nombre: string;
   monto_total: number;
   categoria: string;
-}
+};
 
-export interface Cuota {
+export type Cuota = {
   id: string;
   compra_id: string;
   numero: number;
@@ -65,9 +71,9 @@ export interface Cuota {
   pagado: boolean;
   fecha_marcado: string | null;
   marcado_por: string | null;
-}
+};
 
-export interface GastoVariable {
+export type GastoVariable = {
   id: string;
   mes_id: string;
   nombre: string;
@@ -75,17 +81,17 @@ export interface GastoVariable {
   categoria: string;
   fecha: string;
   marcado_por: string | null;
-}
+};
 
-export interface Notificacion {
+export type Notificacion = {
   id: string;
   referencia_id: string;
   tipo: TipoNotificacion;
   programada_para: string;
   enviada: boolean;
-}
+};
 
-export interface PushSubscriptionRow {
+export type PushSubscriptionRow = {
   id: string;
   household_id: string;
   user_id: string;
@@ -93,50 +99,57 @@ export interface PushSubscriptionRow {
   p256dh: string;
   auth: string;
   created_at: string;
-}
+};
 
-export interface Household {
+export type Household = {
   id: string;
   nombre: string;
   created_at: string;
-}
+};
 
-export interface HouseholdMember {
+export type HouseholdMember = {
   household_id: string;
   user_id: string;
   created_at: string;
-}
+};
 
-export interface Database {
+/** Atajo para declarar una tabla sin relaciones FK expuestas al query builder de PostgREST. */
+type Tabla<Row, Insert = Partial<Row>, Update = Partial<Row>> = {
+  Row: Row;
+  Insert: Insert;
+  Update: Update;
+  Relationships: [];
+};
+
+export type Database = {
+  // Requerido por @supabase/supabase-js >=2.112 para resolver los tipos de
+  // consulta. Debe coincidir con la versión de PostgREST del proyecto
+  // Supabase (Settings > Infrastructure en el dashboard).
+  __InternalSupabase: {
+    PostgrestVersion: "12";
+  };
   public: {
     Tables: {
-      household: { Row: Household; Insert: Partial<Household>; Update: Partial<Household> };
-      household_member: {
-        Row: HouseholdMember;
-        Insert: Partial<HouseholdMember>;
-        Update: Partial<HouseholdMember>;
-      };
-      mes: { Row: Mes; Insert: Partial<Mes>; Update: Partial<Mes> };
-      ingreso: { Row: Ingreso; Insert: Partial<Ingreso>; Update: Partial<Ingreso> };
-      gasto_fijo: { Row: GastoFijo; Insert: Partial<GastoFijo>; Update: Partial<GastoFijo> };
-      gasto_mes: { Row: GastoMes; Insert: Partial<GastoMes>; Update: Partial<GastoMes> };
-      compra: { Row: Compra; Insert: Partial<Compra>; Update: Partial<Compra> };
-      cuota: { Row: Cuota; Insert: Partial<Cuota>; Update: Partial<Cuota> };
-      gasto_variable: {
-        Row: GastoVariable;
-        Insert: Partial<GastoVariable>;
-        Update: Partial<GastoVariable>;
-      };
-      notificacion: {
-        Row: Notificacion;
-        Insert: Partial<Notificacion>;
-        Update: Partial<Notificacion>;
-      };
-      push_subscription: {
-        Row: PushSubscriptionRow;
-        Insert: Partial<PushSubscriptionRow>;
-        Update: Partial<PushSubscriptionRow>;
+      household: Tabla<Household>;
+      household_member: Tabla<HouseholdMember>;
+      mes: Tabla<Mes>;
+      ingreso: Tabla<Ingreso>;
+      gasto_fijo: Tabla<GastoFijo>;
+      gasto_mes: Tabla<GastoMes>;
+      compra: Tabla<Compra>;
+      cuota: Tabla<Cuota>;
+      gasto_variable: Tabla<GastoVariable>;
+      notificacion: Tabla<Notificacion>;
+      push_subscription: Tabla<PushSubscriptionRow>;
+    };
+    Views: Record<string, never>;
+    Functions: {
+      create_household_with_owner: {
+        Args: { p_nombre?: string };
+        Returns: Household;
       };
     };
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
-}
+};
