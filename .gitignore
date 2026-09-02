@@ -1,0 +1,10 @@
+target/
+dbt_packages/
+logs/
+*.log
+.user.yml
+.venv/
+# credenciales — nunca al repo
+*.json
+!docs/*.json
+profiles.yml

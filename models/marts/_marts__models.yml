@@ -1,0 +1,82 @@
+version: 2
+
+models:
+  - name: fct_sessions
+    description: Un registro por sesión de GA4 (user_pseudo_id + ga_session_id).
+    columns:
+      - name: session_key
+        data_tests: [unique, not_null]
+      - name: user_pseudo_id
+        data_tests: [not_null]
+      - name: events
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+      - name: pageviews
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+      - name: revenue_usd
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+      - name: is_engaged
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: session_medium
+        data_tests: [not_null]
+
+  - name: fct_purchases
+    description: Un registro por transacción completada, deduplicado por transaction_id.
+    columns:
+      - name: transaction_id
+        data_tests: [unique, not_null]
+      - name: session_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_sessions')
+                field: session_key
+      - name: user_pseudo_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_users')
+                field: user_pseudo_id
+      - name: purchase_revenue_usd
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+  - name: dim_users
+    description: Un registro por user_pseudo_id con engagement e ingresos lifetime.
+    columns:
+      - name: user_pseudo_id
+        data_tests: [unique, not_null]
+      - name: sessions
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+      - name: orders
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+      - name: lifetime_revenue_usd
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+      - name: is_purchaser
+        data_tests: [not_null]

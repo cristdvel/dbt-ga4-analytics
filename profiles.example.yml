@@ -1,0 +1,17 @@
+# Copiar a ~/.dbt/profiles.yml y rellenar keyfile / project.
+# La keyfile de la service account NUNCA se commitea.
+
+ga4_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: <tu-proyecto-gcp>
+      dataset: <tu-dataset>          # p. ej. dbt_cristhian
+      keyfile: "/ruta/a/service-account.json"
+      location: US                   # obligatorio: el dataset público está en US
+      threads: 4
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      priority: interactive

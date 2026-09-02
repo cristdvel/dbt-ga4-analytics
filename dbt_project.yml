@@ -1,0 +1,26 @@
+name: 'ga4_analytics'
+version: '1.0.0'
+config-version: 2
+
+profile: 'ga4_analytics'
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+vars:
+  ga4_start_date: '20201101'
+  ga4_end_date: '20210131'
+
+models:
+  ga4_analytics:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
