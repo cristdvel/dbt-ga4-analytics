@@ -1,0 +1,18 @@
+# Perfil usado solo por CI (.github/workflows/dbt.yml).
+# La key se escribe en ./sa.json desde el secret BIGQUERY_KEYFILE.
+# Dataset propio (dbt_ci) para no tocar el de desarrollo.
+
+ga4_analytics:
+  target: ci
+  outputs:
+    ci:
+      type: bigquery
+      method: service-account
+      project: dbt-ga4-portfolio
+      dataset: dbt_ci
+      keyfile: ./sa.json
+      location: US
+      threads: 4
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      priority: interactive

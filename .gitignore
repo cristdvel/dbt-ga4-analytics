@@ -7,4 +7,5 @@ logs/
 # credenciales — nunca al repo
 *.json
 !docs/*.json
-profiles.yml
+/profiles.yml
+sa.json

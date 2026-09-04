@@ -1,5 +1,7 @@
 # dbt-ga4-analytics
 
+[![dbt build](https://github.com/cristdvel/dbt-ga4-analytics/actions/workflows/dbt.yml/badge.svg)](https://github.com/cristdvel/dbt-ga4-analytics/actions/workflows/dbt.yml)
+
 Modelo dimensional sobre el export público de **Google Analytics 4** (Google
 Merchandise Store) en **BigQuery**, construido con **dbt**. Convierte la tabla
 de eventos anidada de GA4 en tres tablas limpias, tipadas y testeadas.
@@ -105,6 +107,15 @@ dbt build                            # run + test respetando el DAG
 dbt docs generate --static
 ```
 
+## CI
+
+`.github/workflows/dbt.yml` corre `dbt deps` + `dbt build` (modelos + los 25
+tests) en cada push y PR a `main`, contra un dataset aislado (`dbt_ci`). La
+key de la service account vive en el secret `BIGQUERY_KEYFILE`; el job la
+escribe en `./sa.json` y la borra al final. El build de CI se acota a una
+semana de datos vía `--vars` para no escanear el sample completo en cada run.
+
 ## Stack
 
-dbt 1.12 · dbt-bigquery · dbt_utils · BigQuery · Python 3.12 (entorno `uv`)
+dbt 1.12 · dbt-bigquery · dbt_utils · BigQuery · Python 3.12 (entorno `uv`) ·
+GitHub Actions

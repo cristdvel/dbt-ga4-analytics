@@ -1,0 +1,46 @@
+name: dbt build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: dbt-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DBT_PROFILES_DIR: ./ci
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dbt
+        run: pip install -r requirements.txt
+
+      - name: Write service account key
+        run: echo "$BIGQUERY_KEYFILE" > ./sa.json
+        env:
+          BIGQUERY_KEYFILE: ${{ secrets.BIGQUERY_KEYFILE }}
+
+      - name: dbt deps
+        run: dbt deps
+
+      # Slice de 1 semana para acotar el escaneo de BigQuery en cada run.
+      - name: dbt build
+        run: >
+          dbt build
+          --vars '{ga4_start_date: "20210101", ga4_end_date: "20210107"}'
+
+      - name: Clean up key
+        if: always()
+        run: rm -f ./sa.json
