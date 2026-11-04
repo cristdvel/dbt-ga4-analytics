@@ -80,13 +80,44 @@ source: bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*
   proyecto propio (crea datasets y tablas ahí). Leer `bigquery-public-data` no
   requiere permisos adicionales.
 
-## Tests (25, todos en verde)
+## Tests de modelado (25, todos en verde)
 
 `unique` · `not_null` · `accepted_values` · `relationships` ·
 `dbt_utils.accepted_range`
 
 Cubren claves primarias, rangos numéricos (`events ≥ 1`, `revenue ≥ 0`, …) e
 integridad referencial entre `fct_purchases` ↔ `fct_sessions` ↔ `dim_users`.
+
+## Calidad de datos
+
+Además de los tests de modelado, `dq_daily_health` (mart, 1 fila por día)
+mide la salud del tracking y los tests de `tests/` fijan los umbrales:
+
+| Indicador | Test | Severidad |
+|---|---|---|
+| Correo en `page_location` / `page_referrer` (en claro o `%40`) | `assert_no_pii_in_urls` | **error** |
+| Compras con `transaction_id` válido y valor ≤ 0 | `assert_purchases_have_value` | warn |
+| Eventos `purchase` repetidos > 5 % del día | `assert_purchase_duplicates_below_5pct` | warn |
+| Compras sin `transaction_id` válido > 5 % del día | `assert_purchases_have_transaction_id` | warn |
+| Volumen del día < 50 % de la media de los 7 días previos | `assert_event_volume_stable` | warn |
+
+La lógica de medición tiene **tests unitarios** (`unit_tests` de dbt, con filas
+simuladas): detecta el correo en claro y como `%40`, cuenta el reenvío de una
+misma compra y calcula la razón de volumen contra los 7 días previos.
+
+**Lo que muestra el sample (92 días, 4,3 M de eventos):**
+
+- 5.692 eventos `purchase`, 4.466 transacciones distintas válidas, **320
+  eventos duplicados** (11 días superan el 5 %; el peor, 49 %). `fct_purchases`
+  los deduplica; el test vigila el origen.
+- **906 compras (16 %) sin `transaction_id` válido** (`(not set)`): no se
+  pueden deduplicar ni reconciliar y `fct_purchases` las excluye. 42 días
+  superan el 5 %.
+- 0 compras sin valor, 0 eventos con correo en la URL y ninguna caída de
+  volumen (razón mínima 0,51): el sample está ofuscado y es limpio en esos puntos.
+
+Pendiente (no incluido): ratio de eventos sin consentimiento. El sample es de
+2020–21 y no trae `privacy_info`; solo tiene sentido sobre un export propio.
 
 ## Cómo ejecutarlo
 
@@ -109,8 +140,8 @@ dbt docs generate --static
 
 ## CI
 
-`.github/workflows/dbt.yml` corre `dbt deps` + `dbt build` (modelos + los 25
-tests) en cada push y PR a `main`, contra un dataset aislado (`dbt_ci`). La
+`.github/workflows/dbt.yml` corre `dbt deps` + `dbt build` (modelos, tests de
+datos y tests unitarios) en cada push y PR a `main`, contra un dataset aislado (`dbt_ci`). La
 key de la service account vive en el secret `BIGQUERY_KEYFILE`; el job la
 escribe en `./sa.json` y la borra al final. El build de CI se acota a una
 semana de datos vía `--vars` para no escanear el sample completo en cada run.
