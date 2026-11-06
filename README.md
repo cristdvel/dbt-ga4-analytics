@@ -119,6 +119,22 @@ misma compra y calcula la razón de volumen contra los 7 días previos.
 Pendiente (no incluido): ratio de eventos sin consentimiento. El sample es de
 2020–21 y no trae `privacy_info`; solo tiene sentido sobre un export propio.
 
+### Dashboard (Looker Studio)
+
+![Dashboard de calidad de datos sobre dq_daily_health](docs/dashboard-calidad-datos.png)
+
+`dq_daily_health` alimenta un informe de Looker Studio con cuatro totales
+(eventos, eventos `purchase` duplicados, compras sin `transaction_id` válido y
+eventos con correo en la URL) y cuatro series diarias: volumen frente a su
+media de 7 días, ratio de volumen (alerta si < 0,5), compras duplicadas y
+compras sin `transaction_id` válido. Los datos son el sample público de GA4
+(Google Merchandise Store): no hay datos de ningún cliente.
+
+Flujo de principio a fin:
+`bigquery-public-data.ga4_obfuscated_sample_ecommerce` → staging (view) →
+marts (table) → tests (`dbt build`, CI en GitHub Actions) → `dq_daily_health`
+→ Looker Studio.
+
 ## Cómo ejecutarlo
 
 Requiere Python 3.12 y una service account de BigQuery con permiso para crear
