@@ -123,11 +123,12 @@ Pendiente (no incluido): ratio de eventos sin consentimiento. El sample es de
 
 ![Dashboard de calidad de datos sobre dq_daily_health](docs/dashboard-calidad-datos.png)
 
-`dq_daily_health` alimenta un informe de Looker Studio con cuatro totales
-(eventos, eventos `purchase` duplicados, compras sin `transaction_id` válido y
-eventos con correo en la URL) y cuatro series diarias: volumen frente a su
-media de 7 días, ratio de volumen (alerta si < 0,5), compras duplicadas y
-compras sin `transaction_id` válido. Los datos son el sample público de GA4
+`dq_daily_health` alimenta un informe de Looker Studio con cinco indicadores
+(eventos analizados, tasa de compras duplicadas, compras sin `transaction_id`
+válido, eventos con correo en la URL y ratio de volumen mínimo), un selector de
+fechas y cuatro series diarias: volumen frente a su media de 7 días, ratio de
+volumen (alerta si < 0,5), compras duplicadas y compras sin `transaction_id`
+válido, con los umbrales de los tests de dbt como líneas discontinuas. Los datos son el sample público de GA4
 (Google Merchandise Store): no hay datos de ningún cliente.
 
 Flujo de principio a fin:
