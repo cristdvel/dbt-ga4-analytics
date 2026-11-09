@@ -123,6 +123,8 @@ Pendiente (no incluido): ratio de eventos sin consentimiento. El sample es de
 
 ![Dashboard de calidad de datos sobre dq_daily_health](docs/dashboard-calidad-datos.png)
 
+[Abrir el informe interactivo en Looker Studio](https://datastudio.google.com/reporting/d292ce32-dd88-42bd-a71a-e91a991e8cea/page/TlJ0C)
+
 `dq_daily_health` alimenta un informe de Looker Studio con cinco indicadores
 (eventos analizados, tasa de compras duplicadas, compras sin `transaction_id`
 válido, eventos con correo en la URL y ratio de volumen mínimo), un selector de
