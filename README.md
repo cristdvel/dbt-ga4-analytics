@@ -169,3 +169,9 @@ semana de datos vía `--vars` para no escanear el sample completo en cada run.
 
 dbt 1.12 · dbt-bigquery · dbt_utils · BigQuery · Python 3.12 (entorno `uv`) ·
 GitHub Actions
+
+## Licencia
+
+Derechos reservados: el código es público para evaluarlo como muestra de trabajo.
+Si quieres usarlo, adaptarlo o integrarlo, escríbeme primero a través de
+[cristhianvelasquez.com](https://cristhianvelasquez.com). Detalles en [LICENSE](LICENSE).
